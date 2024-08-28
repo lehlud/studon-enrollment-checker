@@ -8,12 +8,16 @@ load_dotenv()
 
 course_ids = os.getenv('COURSE_IDS').split(' ')
 
-with lib.open_driver() as driver:
-    for id in course_ids:
-        print('checking course ' + id + '...')
-        name, status, access = lib.get_course_info(driver, id)
+for id in course_ids:
+    print('checking course ' + id + '...')
 
-        if (status, access) != lib.get_cached_course(id):
-            print('course ' + id + ' has changed!')
-            lib.cache_course(id, status, access)
-            lib.try_notify_course_update(id, name, status, access)
+    info = lib.get_course_info(id)
+    if info is None:
+        print('course ' + id + ' is not available!')
+        continue
+
+    name, status, access = info
+    if (status, access) != lib.get_cached_course(id):
+        print('course ' + id + ' has changed!')
+        lib.cache_course(id, status, access)
+        lib.try_notify_course_update(id, name, status, access)
