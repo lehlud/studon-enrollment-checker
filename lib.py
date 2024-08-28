@@ -11,6 +11,9 @@ from email.mime.text import MIMEText
 
 load_dotenv()
 
+cwd = os.path.dirname(os.path.realpath(__file__))
+cache_file_path = os.path.join(cwd, 'cache.json')
+
 
 def get_course_info(course_id) -> tuple[str, str, str] | None:
     url = f'https://www.studon.fau.de/studon/goto.php?target=crs_{course_id}'
@@ -62,8 +65,8 @@ def try_notify_course_update(course_id, name, status, access):
 
 def _get_course_cache() -> dict[int, dict]:
     data = {}
-    if os.path.exists('cache.json'):
-        with open('cache.json', 'r') as f:
+    if os.path.exists(cache_file_path):
+        with open(cache_file_path, 'r') as f:
             data = json.load(f)
     return data
 
@@ -83,5 +86,5 @@ def cache_course(course_id, status, access):
         'access': access
     }
 
-    with open('cache.json', 'w') as f:
+    with open(cache_file_path, 'w') as f:
         json.dump(cache, f, indent=4)
